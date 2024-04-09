@@ -1,25 +1,33 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:latest' // Use the Maven Docker image as the agent
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket inside the container
-        }
-    }
-    
+    agent any
+
     stages {
         stage('Build') {
             steps {
-                // Checkout source code from SCM
-                checkout scm // This will automatically check out the code from the URL specified in Jenkins configuration
+                // Checkout code from GitHub
+                git 'https://github.com/Rsowmya26/aa.git'
                 
-                // Build Maven project using a batch script
-                bat "mvn clean package"
+                // Build with Maven
+                bat 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
-                // Run Maven tests using a batch script
-                bat "mvn test"
+                // Test with Maven
+                bat 'mvn test'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                // Build Docker image
+                bat 'docker build -t your-docker-image-name .'
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                // Push Docker image to Docker registry
+                // Replace <docker-hub-username> with your Docker Hub username
+                bat 'docker push <docker-hub-username>/your-docker-image-name'
             }
         }
     }
